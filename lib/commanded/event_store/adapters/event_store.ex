@@ -45,7 +45,8 @@ defmodule Commanded.EventStore.Adapters.EventStore do
   def stream_forward(adapter_meta, stream_uuid, start_version \\ 0, read_batch_size \\ 1_000) do
     {event_store, name} = extract_adapter_meta(adapter_meta)
 
-    opts = [name: name, read_batch_size: read_batch_size]
+    # 10 minute timeout to read - make more robust when booting large aggregates 
+    opts = [name: name, read_batch_size: read_batch_size, timeout: 600_000]
 
     case event_store.stream_forward(stream_uuid, start_version, opts) do
       {:error, error} -> {:error, error}
